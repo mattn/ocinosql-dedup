@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/sha256"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -16,11 +17,13 @@ import (
 func run() int {
 	var compartmentId, tableName string
 	var createTable bool
+	var hashkey bool
 	var k string
 
 	flag.StringVar(&compartmentId, "compartment-id", os.Getenv("OCI_NOSQL_COMPARTMENT_ID"), "compartment id")
 	flag.StringVar(&tableName, "table-name", os.Getenv("OCI_NOSQL_TABLE_NAME"), "table name")
 	flag.BoolVar(&createTable, "create-table", false, "create table")
+	flag.BoolVar(&hashkey, "hashkey", false, "hash key")
 	flag.StringVar(&k, "k", "id", "identify for the key")
 	flag.Parse()
 
@@ -68,6 +71,9 @@ func run() int {
 			continue
 		}
 		vks := fmt.Sprint(vk)
+		if hashkey {
+			vks = fmt.Sprintf("%x", sha256.Sum256([]byte(vks)))
+		}
 
 		respGetRow, err := client.GetRow(context.Background(), nosql.GetRowRequest{
 			CompartmentId: common.String(compartmentId),
