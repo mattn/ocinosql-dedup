@@ -35,7 +35,7 @@ func run() int {
 			CreateTableDetails: nosql.CreateTableDetails{
 				Name:          common.String(tableName),
 				CompartmentId: common.String(compartmentId),
-				DdlStatement:  common.String(`CREATE TABLE nostr_makeitquote(id STRING, created_at TIMESTAMP(0), PRIMARY KEY(SHARD(id)))`),
+				DdlStatement:  common.String(fmt.Sprintf(`CREATE TABLE %s(id STRING, created_at TIMESTAMP(0), PRIMARY KEY(SHARD(id)))`, tableName)),
 				TableLimits: &nosql.TableLimits{
 					MaxReadUnits:    common.Int(1),
 					MaxWriteUnits:   common.Int(1),
