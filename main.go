@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"crypto/sha256"
 	"encoding/json"
@@ -53,8 +54,9 @@ func run() int {
 		return 0
 	}
 
+	buf := bufio.NewWriter(os.Stdout)
 	dec := json.NewDecoder(os.Stdin)
-	enc := json.NewEncoder(os.Stdout)
+	enc := json.NewEncoder(buf)
 	for {
 		var v map[string]interface{}
 		err = dec.Decode(&v)
@@ -96,6 +98,7 @@ func run() int {
 				continue
 			}
 			enc.Encode(v)
+			buf.Flush()
 		}
 	}
 	return 0
