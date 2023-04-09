@@ -26,12 +26,14 @@ func run() int {
 	var createTable bool
 	var hashkey bool
 	var k string
+	var verbose bool
 
 	flag.StringVar(&compartmentId, "compartment-id", os.Getenv("OCI_NOSQL_COMPARTMENT_ID"), "compartment id")
 	flag.StringVar(&tableName, "table-name", os.Getenv("OCI_NOSQL_TABLE_NAME"), "table name")
 	flag.BoolVar(&createTable, "create-table", false, "create table")
 	flag.BoolVar(&hashkey, "hashkey", false, "hash key")
 	flag.StringVar(&k, "k", "id", "identify for the key")
+	flag.BoolVar(&verbose, "V", false, "verbose")
 	flag.Parse()
 
 	client, err := nosql.NewNosqlClientWithConfigurationProvider(common.DefaultConfigProvider())
@@ -60,7 +62,13 @@ func run() int {
 		return 0
 	}
 
-	buf := bufio.NewWriter(os.Stdout)
+	var out io.Writer
+	if verbose {
+		out = io.MultiWriter(os.Stdout, os.Stderr)
+	} else {
+		out = os.Stdout
+	}
+	buf := bufio.NewWriter(out)
 	dec := json.NewDecoder(os.Stdin)
 	enc := json.NewEncoder(buf)
 	for {
