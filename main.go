@@ -15,6 +15,12 @@ import (
 	"github.com/oracle/oci-go-sdk/nosql"
 )
 
+const name = "ocinosql-dedup"
+
+const version = "0.0.0"
+
+var revision = "HEAD"
+
 func run() int {
 	var compartmentId, tableName string
 	var createTable bool
