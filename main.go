@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"crypto/sha256"
 	"encoding/json"
@@ -68,9 +67,8 @@ func run() int {
 	} else {
 		out = os.Stdout
 	}
-	buf := bufio.NewWriter(out)
 	dec := json.NewDecoder(os.Stdin)
-	enc := json.NewEncoder(buf)
+	enc := json.NewEncoder(out)
 	for {
 		var v map[string]interface{}
 		err = dec.Decode(&v)
@@ -96,7 +94,7 @@ func run() int {
 			TableNameOrId: common.String(tableName),
 			Key:           []string{"id:" + vks},
 		})
-		if err != nil || len(respGetRow.Value) == 0 {
+		if err == nil && len(respGetRow.Value) == 0 {
 			_, err = client.UpdateRow(context.Background(), nosql.UpdateRowRequest{
 				TableNameOrId: common.String(tableName),
 				UpdateRowDetails: nosql.UpdateRowDetails{
@@ -112,7 +110,6 @@ func run() int {
 				continue
 			}
 			enc.Encode(v)
-			buf.Flush()
 		}
 	}
 	return 0
