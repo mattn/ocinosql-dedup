@@ -26,6 +26,7 @@ func run() int {
 	var hashkey bool
 	var k string
 	var verbose bool
+	var showVersion bool
 
 	flag.StringVar(&compartmentId, "compartment-id", os.Getenv("OCI_NOSQL_COMPARTMENT_ID"), "compartment id")
 	flag.StringVar(&tableName, "table-name", os.Getenv("OCI_NOSQL_TABLE_NAME"), "table name")
@@ -33,7 +34,13 @@ func run() int {
 	flag.BoolVar(&hashkey, "hashkey", false, "hash key")
 	flag.StringVar(&k, "k", "id", "identify for the key")
 	flag.BoolVar(&verbose, "V", false, "verbose")
+	flag.BoolVar(&showVersion, "v", false, "show version")
 	flag.Parse()
+
+	if showVersion {
+		fmt.Println(version)
+		os.Exit(0)
+	}
 
 	client, err := nosql.NewNosqlClientWithConfigurationProvider(common.DefaultConfigProvider())
 	if err != nil {
