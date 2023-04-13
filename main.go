@@ -101,23 +101,27 @@ func run() int {
 			TableNameOrId: common.String(tableName),
 			Key:           []string{"id:" + vks},
 		})
-		if err == nil && len(respGetRow.Value) == 0 {
-			_, err = client.UpdateRow(context.Background(), nosql.UpdateRowRequest{
-				TableNameOrId: common.String(tableName),
-				UpdateRowDetails: nosql.UpdateRowDetails{
-					CompartmentId: common.String(compartmentId),
-					Value: map[string]interface{}{
-						"id":         vks,
-						"created_at": time.Now().Format(time.RFC3339),
-					},
-				},
-			})
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "%v: %v\n", os.Args[0], err)
-				continue
-			}
-			enc.Encode(v)
+		if err != nil {
+			continue
 		}
+		if len(respGetRow.Value) > 0 {
+			continue
+		}
+		_, err = client.UpdateRow(context.Background(), nosql.UpdateRowRequest{
+			TableNameOrId: common.String(tableName),
+			UpdateRowDetails: nosql.UpdateRowDetails{
+				CompartmentId: common.String(compartmentId),
+				Value: map[string]interface{}{
+					"id":         vks,
+					"created_at": time.Now().Format(time.RFC3339),
+				},
+			},
+		})
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%v: %v\n", os.Args[0], err)
+			continue
+		}
+		enc.Encode(v)
 	}
 	return 0
 }
